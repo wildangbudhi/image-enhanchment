@@ -10,9 +10,6 @@ class ImageProcessor():
         self.original_image = cv.imread( image_path, 0 )
         self.processed_image = self.original_image
 
-        print( self.processed_image )
-        print( type( self.processed_image ) )
-
     def run( self ):
 
         while True:
@@ -40,18 +37,18 @@ class ImageProcessor():
         self.processed_image = self.original_image
 
     def to_negatif( self ):
-        self.processed_image = 255 - self.processed_image
+        self.processed_image = 255.0 - self.processed_image
 
     def hist_eq( self ):
         self.processed_image = cv.equalizeHist( self.processed_image )
 
     def log_transform( self ):
-        self.processed_image = np.array( 100 * np.log10( 1 + self.processed_image ), dtype = np.uint8 )
+        self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
 
     def power_law( self ):
-        first_gamma = np.array(255 * (self.processed_image / 255)**0.3, dtype = np.uint8)
-        second_gamma = np.array(255 * (self.processed_image / 255)**0.6, dtype = np.uint8)
-        self.processed_image = cv.hconcat([first_gamma, second_gamma])
+        first_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.3, dtype=np.uint8 )
+        second_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.6, dtype=np.uint8 )
+        self.processed_image = cv.hconcat( [ first_gamma, second_gamma ] )
 
 def main():
     img_path = argv[1]
