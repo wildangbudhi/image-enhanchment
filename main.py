@@ -10,8 +10,12 @@ class ImageProcessor():
         cv.namedWindow( self.ROOT_WINDOWS )
         self.original_image = cv.imread( image_path, 0 )
         self.processed_image = self.original_image
+        self.fig, ( self.ax1, self.ax2 ) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
+        self.fig.suptitle( "Histogram Equalization" )
 
     def run( self ):
+
+        self.histogram_( self.original_image, self.processed_image )
 
         while True:
             self.show()
@@ -36,68 +40,56 @@ class ImageProcessor():
             elif( code == ord('c') ):
                 #use xray_penuomia
                 self.contrast_streching()
+            
 
-    def histogram_(self,original_image,equalized):
-        fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
-        fig.suptitle( "Histogram Equalization" )
+    def histogram_( self, original_image, equalized ):
 
-        ax1.hist( original_image.ravel(), 256, [0, 256] )
-        ax1.set_title( 'Source' )
+        self.ax1.clear()
+        self.ax2.clear()
 
-        ax2.hist( equalized.ravel(), 256, [0, 256] )
-        ax2.set_title( 'Equalized' )
+        self.ax1.hist( original_image.ravel(), 256, [0, 256] )
+        self.ax1.set_title( 'Source' )
 
-        plt.show()
+        self.ax2.hist( equalized.ravel(), 256, [0, 256] )
+        self.ax2.set_title( 'Result' )
+
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+
+        plt.pause(0.0001)
+        self.fig.show()
     
     def show( self ):
+        preview_result = cv.hconcat( [ self.original_image, self.processed_image ] )
         cv.imshow( self.ROOT_WINDOWS, self.processed_image )
 
     def reset_image( self ):
         self.processed_image = self.original_image
+        self.histogram_( self.original_image, self.processed_image )
 
     def to_negatif( self ):
         self.processed_image = 255 - self.processed_image
-        self.histogram_(self.original_image,self.processed_image)
-        self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        self.histogram_( self.original_image, self.processed_image )
         
-
     def hist_eq( self ):
         equalized = cv.equalizeHist( self.processed_image )
         self.histogram_(self.original_image,equalized)
         self.processed_image = cv.hconcat( [ self.original_image, equalized ] )
-        
-        # fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
-        # fig.suptitle( "Histogram Equalization" )
-
-        # ax1.hist( self.original_image.ravel(), 256, [0, 256] )
-        # ax1.set_title( 'Source' )
-
-        # ax2.hist( equalized.ravel(), 256, [0, 256] )
-        # ax2.set_title( 'Equalized' )
-
-        # plt.show()
+        self.histogram_( self.original_image, self.processed_image )
 
     def log_transform( self ):
         self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
-        self.histogram_(self.original_image,self.processed_image)
-        self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
-        
+        self.histogram_( self.original_image, self.processed_image )
 
     def median_filtering( self ):
         self.processed_image = cv.medianBlur(self.processed_image, 5)
-        self.histogram_(self.original_image,self.processed_image)
-        self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
-        
-        # self.processed_image = np.concatenate((self.processed_image, self.processed_image), axis=1) #membandingkan
+        self.histogram_( self.original_image, self.processed_image )
 
     def contrast_streching( self ):
         self.processed_image = cv.normalize(self.processed_image, None, alpha=0, beta=1.2, norm_type=cv.NORM_MINMAX, dtype=cv.CV_32F)
         self.processed_image = np.clip(self.processed_image, 0, 1)
         self.processed_image = (255*self.processed_image).astype(np.uint8)
-        self.histogram_(self.original_image,self.processed_image)
-        self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
-        
-        # self.processed_image = np.concatenate((self.processed_image, self.processed_image), axis=1) #membandingkan
+        self.histogram_( self.original_image, self.processed_image )
 
 def main():
     img_path = argv[1]
