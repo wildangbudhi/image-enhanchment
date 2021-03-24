@@ -27,8 +27,8 @@ class ImageProcessor():
                 self.hist_eq()
             elif( code == ord('l') ):
                 self.log_transform()
-            elif( code == ord('p') ):
-                self.power_law()
+            # elif( code == ord('p') ):
+            #     self.power_law()
             elif( code == ord('m') ):
                 #use brain image
                 self.median_filtering()
@@ -51,10 +51,10 @@ class ImageProcessor():
     def log_transform( self ):
         self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
 
-    def power_law( self ):
-        first_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.3, dtype=np.uint8 )
-        second_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.6, dtype=np.uint8 )
-        self.processed_image = cv.hconcat( [ first_gamma, second_gamma ] )
+    # def power_law( self ):
+    #     first_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.3, dtype=np.uint8 )
+    #     second_gamma = np.array( 255.0 * ( self.processed_image / 255.0 ) ** 0.6, dtype=np.uint8 )
+    #     self.processed_image = cv.hconcat( [ first_gamma, second_gamma ] )
 
     def median_filtering( self ):
         median = cv.medianBlur(self.processed_image, 5)
