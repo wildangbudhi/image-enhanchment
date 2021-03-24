@@ -37,6 +37,18 @@ class ImageProcessor():
                 #use xray_penuomia
                 self.contrast_streching()
 
+    def histogram_(self,original_image,equalized):
+        fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
+        fig.suptitle( "Histogram Equalization" )
+
+        ax1.hist( original_image.ravel(), 256, [0, 256] )
+        ax1.set_title( 'Source' )
+
+        ax2.hist( equalized.ravel(), 256, [0, 256] )
+        ax2.set_title( 'Equalized' )
+
+        plt.show()
+    
     def show( self ):
         cv.imshow( self.ROOT_WINDOWS, self.processed_image )
 
@@ -46,29 +58,32 @@ class ImageProcessor():
     def to_negatif( self ):
         self.processed_image = 255 - self.processed_image
         self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        self.histogram_(self.original_image,self.processed_image)
 
     def hist_eq( self ):
         equalized = cv.equalizeHist( self.processed_image )
         self.processed_image = cv.hconcat( [ self.original_image, equalized ] )
+        self.histogram_(self.original_image,equalized)
+        # fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
+        # fig.suptitle( "Histogram Equalization" )
 
-        fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
-        fig.suptitle( "Histogram Equalization" )
+        # ax1.hist( self.original_image.ravel(), 256, [0, 256] )
+        # ax1.set_title( 'Source' )
 
-        ax1.hist( self.original_image.ravel(), 256, [0, 256] )
-        ax1.set_title( 'Source' )
+        # ax2.hist( equalized.ravel(), 256, [0, 256] )
+        # ax2.set_title( 'Equalized' )
 
-        ax2.hist( equalized.ravel(), 256, [0, 256] )
-        ax2.set_title( 'Equalized' )
-
-        plt.show()
+        # plt.show()
 
     def log_transform( self ):
         self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
         self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        self.histogram_(self.original_image,self.processed_image)
 
     def median_filtering( self ):
         self.processed_image = cv.medianBlur(self.processed_image, 5)
         self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        self.histogram_(self.original_image,self.processed_image)
         # self.processed_image = np.concatenate((self.processed_image, self.processed_image), axis=1) #membandingkan
 
     def contrast_streching( self ):
@@ -76,8 +91,8 @@ class ImageProcessor():
         self.processed_image = np.clip(self.processed_image, 0, 1)
         self.processed_image = (255*self.processed_image).astype(np.uint8)
         self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        self.histogram_(self.original_image,self.processed_image)
         # self.processed_image = np.concatenate((self.processed_image, self.processed_image), axis=1) #membandingkan
-
 
 def main():
     img_path = argv[1]
