@@ -27,7 +27,7 @@ class ImageProcessor():
                 #use xray_penuomia
                 self.hist_eq()
             elif( code == ord('l') ):
-                #use logaritmik
+                #use logaritmik_2
                 self.log_transform()
             elif( code == ord('m') ):
                 #use brain image
