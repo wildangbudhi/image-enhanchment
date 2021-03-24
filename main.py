@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import matplotlib.pyplot as plt
 from sys import argv
 
 class ImageProcessor():
@@ -47,8 +48,19 @@ class ImageProcessor():
         self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
 
     def hist_eq( self ):
-        self.processed_image = cv.equalizeHist( self.processed_image )
-        self.processed_image = cv.hconcat( [ self.original_image, self.processed_image ] )
+        equalized = cv.equalizeHist( self.processed_image )
+        self.processed_image = cv.hconcat( [ self.original_image, equalized ] )
+
+        fig, (ax1, ax2) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
+        fig.suptitle( "Histogram Equalization" )
+
+        ax1.hist( self.original_image.ravel(), 256, [0, 256] )
+        ax1.set_title( 'Source' )
+
+        ax2.hist( equalized.ravel(), 256, [0, 256] )
+        ax2.set_title( 'Equalized' )
+
+        plt.show()
 
     def log_transform( self ):
         self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
