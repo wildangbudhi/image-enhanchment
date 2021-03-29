@@ -10,8 +10,8 @@ class ImageProcessor():
         cv.namedWindow( self.ROOT_WINDOWS )
         self.original_image = cv.imread( image_path, 0 )
         self.processed_image = self.original_image
-        self.fig, ( self.ax1, self.ax2 ) = plt.subplots( 1, 2, figsize=( 18, 6 ) )
-        self.fig.suptitle( "Histogram Equalization" )
+        self.fig, ( self.ax1, self.ax2 ) = plt.subplots( 1, 2, figsize=( 9, 3 ) )
+        self.fig.suptitle( "Histogram" )
 
     def run( self ):
 
@@ -27,20 +27,20 @@ class ImageProcessor():
             elif( code == ord('r') ):
                 self.reset_image()
             elif( code == ord('n') ):
+                # use cancer
                 self.to_negatif()
-            elif( code == ord('h') ):
-                #use xray_penuomia
-                self.hist_eq()
-            elif( code == ord('l') ):
-                #use logaritmik_2
-                self.log_transform()
-            elif( code == ord('m') ):
-                #use brain image
-                self.median_filtering()
             elif( code == ord('c') ):
                 #use xray_penuomia
                 self.contrast_streching()
-            
+            elif( code == ord('m') ):
+                #use brain image
+                self.median_filtering()
+            elif( code == ord('l') ):
+                #use logaritmik
+                self.log_transform()
+            elif( code == ord('h') ):
+                #use xray_penuomia, iris, bay
+                self.hist_eq()
 
     def histogram_( self, original_image, equalized ):
 
@@ -58,7 +58,7 @@ class ImageProcessor():
 
         plt.pause(0.0001)
         self.fig.show()
-    
+
     def show( self ):
         preview_result = cv.hconcat( [ self.original_image, self.processed_image ] )
         cv.imshow( self.ROOT_WINDOWS, self.processed_image )
@@ -70,26 +70,24 @@ class ImageProcessor():
     def to_negatif( self ):
         self.processed_image = 255 - self.processed_image
         self.histogram_( self.original_image, self.processed_image )
-        
-    def hist_eq( self ):
-        equalized = cv.equalizeHist( self.processed_image )
-        self.histogram_(self.original_image,equalized)
-        self.processed_image = cv.hconcat( [ self.original_image, equalized ] )
-        self.histogram_( self.original_image, self.processed_image )
-
-    def log_transform( self ):
-        self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
-        self.histogram_( self.original_image, self.processed_image )
-
-    def median_filtering( self ):
-        self.processed_image = cv.medianBlur(self.processed_image, 5)
-        self.histogram_( self.original_image, self.processed_image )
 
     def contrast_streching( self ):
         self.processed_image = cv.normalize(self.processed_image, None, alpha=0, beta=1.2, norm_type=cv.NORM_MINMAX, dtype=cv.CV_32F)
         self.processed_image = np.clip(self.processed_image, 0, 1)
         self.processed_image = (255*self.processed_image).astype(np.uint8)
         self.histogram_( self.original_image, self.processed_image )
+
+    def median_filtering( self ):
+        self.processed_image = cv.medianBlur(self.processed_image, 5)
+        self.histogram_( self.original_image, self.processed_image )
+
+    def log_transform( self ):
+        self.processed_image = np.array( 100.0 * np.log10( 1.0 + self.processed_image ), dtype=np.uint8 )
+        self.histogram_( self.original_image, self.processed_image )
+
+    def hist_eq( self ):
+        self.processed_image = cv.equalizeHist( self.processed_image )
+        self.histogram_(self.original_image, self.processed_image)
 
 def main():
     img_path = argv[1]
